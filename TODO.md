@@ -2,7 +2,7 @@
 
 Work breakdown by team. **Rule of thumb: finish every necessity before anyone starts an idea.** A complete, well-tested basic game beats a half-finished fancy one on the rubric.
 
-The three teams build against a shared **interface contract** (the methods the UI is allowed to call on the game object). Agree on that contract in the first day or two — it's what lets all three teams work in parallel without blocking each other.
+The three teams build against a shared **interface contract** (the methods the UI is allowed to call on the game object). Back end and front devs need to agree on this before any code is written. 
 
 ---
 
