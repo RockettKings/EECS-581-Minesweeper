@@ -1,3 +1,20 @@
+
+"""
+Prologue Comment
+File: board.py
+Description: Generates the Minesweeper board. Builds the grid of Tile
+             objects, randomly places mines while keeping a safe zone
+             around the player's first click, and computes each cell's
+             count of adjacent mines.
+Inputs:  difficulty (int: 0/1/2), and the first-clicked row and column.
+Outputs: A fully built board (list of Tile objects) with mines placed
+         and adjacency numbers set, returned by makeBoard().
+External sources: Code is original. Claude was used as a logic and conceptual
+checker. Verifying edge cases, and confirming correctness. 
+Author: Jaycob Campos
+Created: [Sept 14 2026]
+"""
+
 from difficulty import BEGINNER
 from difficulty import INTERMEDIATE
 from difficulty import EXPERT
@@ -13,6 +30,9 @@ class Tile:
 
 
 class Board:
+    # Builds a board for the given difficulty. Requires the first click position
+    # Location up front so a 3x3 grid can be formed around the starting position 
+    # to make sure no mines get placed around the start. 
     def __init__(self, difficulty, clickedRow, clickedColumn):
         self.difficulty = difficulty
         self.clickedRow = clickedRow
@@ -76,6 +96,8 @@ class Board:
 
         return None
 
+    # Fills the baord with tiles then places mines and lastly computes adjacenty counts
+    # then returns the completed board.
     def makeBoard(self):
         totalCells = (self.dimension["row"] * self.dimension["column"])
 
