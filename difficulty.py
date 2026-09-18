@@ -4,7 +4,7 @@ class Difficulty:
         self.gridSize = {"row": rows, "column": columns}
         self.mineCount = mineCount
 
-BEGINNER = Difficulty(9, 9, 10)
+BEGINNER = Difficulty(10, 10, 10)
 INTERMEDIATE = Difficulty(16, 16, 40)
 EXPERT = Difficulty(16, 30, 99)
 
