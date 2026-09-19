@@ -10,18 +10,19 @@ We chose story points over direct hour estimates because relative sizing made mo
 
 To produce an hour estimate for planning, we mapped story points to hours at a conversion rate of **1.5 hours per point**.
 
-| Difficulty scale | Story points | Interpretation                  |
-|------------------|--------------|---------------------------------|
-| Trivial          | 1            | done in one sitting             |
-| Small            | 2–3          | a normal, well-understood task  |
-| Medium           | 5            | real logic with edge cases      |
-| Large            | 8            | many moving parts               |
+| Difficulty scale | Story points | Interpretation                 |
+|------------------|--------------|--------------------------------|
+| Trivial          | 1            | done in one sitting            |
+| Small            | 2–3          | a normal, well-understood task |
+| Medium           | 5            | real logic with edge cases     |
+| Large            | 8            | many moving parts              |
 
 ## Estimated Totals
 
+
 | Area                    | Story points | Est. hours |
 |-------------------------|--------------|------------|
-| Backend logic           | #            | #          |
-| UI and user events      | #            | #          |
-| Integration / QA / docs | #            | #          |
-| **Total**               | **#**        | **#**      |
+| Backend logic           |              |            |
+| UI and user events      |              |            |
+| Integration / QA / docs |              |            |
+| **Total**               |              |            |
