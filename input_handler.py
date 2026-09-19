@@ -79,24 +79,33 @@ class MinesweeperGame:
             return
  
         state = self.manager.get_state()
+
+        #do not allow board clicks after the game is over
+        if not state.is_active:
+            return
+        
         row = (y - display.TOP_BAR_HEIGHT) // display.CELL_SIZE
         col = x // display.CELL_SIZE
         if row < 0 or row >= state.rows or col < 0 or col >= state.columns:
             return
  
-        was_first_move = state.first_move
 
         # left click to reveal square
         if button == 1:
+            was_first_move = state.first_move
             self.manager.reveal(row, col)
+
+            #start the timer when the first quare is actually revealed
+            if was_first_move and not self.manager.get_state().first_move:
+                self.start_ticks = pygame.time.get_ticks()
+
+
         # right click to flag square
         elif button == 3:
             self.manager.toggle_flag(row, col)
-        # start the timer on the first move
-        if was_first_move and not self.manager.get_state().first_move:
-            self.start_ticks = pygame.time.get_ticks()
 
-    # handle keyboard inputsq
+
+    # handle keyboard inputs
     def _handle_keydown(self, key):
         if self.screen_mode != "playing":
             return
@@ -107,7 +116,7 @@ class MinesweeperGame:
         elif key == pygame.K_ESCAPE:
             self._go_to_menu()
  
-   # start a new game with the selected difficulty
+    # start a new game with the selected difficulty
     def _start_game(self, difficulty_index):
         self.manager = GameManager(difficulty_index)
         self.screen_mode = "playing"
@@ -155,4 +164,3 @@ def main():
  
 if __name__ == "__main__":
     main()
- 
