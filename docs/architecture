@@ -19,15 +19,14 @@ Input Handler - takes the player's clicks and passes them to the Game Logic.
 
 Data flow
 
-```mermaid
-flowchart LR
-    Player([Player]) -->|"click / right-click"| Input[Input Handler]
-    Input -->|"validated action"| Logic[Game Logic]
-    Logic -->|"read / update cells"| Board[Board Manager]
-    Board -->|"current cell state"| Logic
-    Logic -->|"state changed"| UI[User Interface]
-    UI -->|"renders grid, mines left, status"| Player
-```
+Player
+  │  click / right-click
+  ▼
+Input Handler ──validated action──► Game Logic ◄──► Board Manager
+                                        │        (read / update cells)
+                                        │ state changed
+                                        ▼
+                                  User Interface ──renders──► Player
 
 Key data structures
 
