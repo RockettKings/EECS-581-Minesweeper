@@ -16,7 +16,29 @@ MENU_SIZE = (300, 200)
 TOP_BAR_HEIGHT = 40
 CELL_SIZE = 30
 MIN_WINDOW_WIDTH = 400
- 
+
+# basic colors used by the menu and game board
+BACKGROUND_COLOR = (225, 225, 225)
+BUTTON_COLOR = (190, 190, 190)
+BUTTON_HOVER_COLOR = (210, 210, 210)
+BORDER_COLOR = (90, 90, 90)
+HIDDEN_CELL_COLOR = (180, 180, 180)
+REVEALED_CELL_COLOR = (235, 235, 235)
+TOP_BAR_COLOR = (205, 205, 205)
+TEXT_COLOR = (20, 20, 20)
+MINE_COLOR = (190, 40, 40)
+FLAG_COLOR = (190, 40, 40)
+
+NUMBER_COLORS = {
+    1: (0, 0, 200),
+    2: (0, 130, 0),
+    3: (200, 0, 0),
+    4: (0, 0, 120),
+    5: (120, 0, 0),
+    6: (0, 120, 120),
+    7: (0, 0, 0),
+    8: (90, 90, 90),
+}
  
 # required funcions (referenced in input_handler.py)
 # called in input_handler.py to get the clickable rect for the difficulty buttons
