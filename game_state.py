@@ -1,3 +1,13 @@
+'''
+Prologue comment
+File: game_state.py
+Description: Stores the current minesweeper game configuration and status
+Inputs: Difficulty selection and game state updates from game-manager
+Outputs: Board dimensions, mine count, flag counts, first move status, and the current game status
+External sources: None
+Author: Lydia Peng
+Created: 9/15/26
+'''
 from dataclasses import dataclass, field
 from enum import Enum
 

@@ -1,3 +1,13 @@
+'''
+Prologue comment
+File: game_manager.py
+Description: Manages player actions and connects the frontend to the board and game state logic
+Inputs: Difficulty selections and row/column positions from the frontend
+Outputs: Updated tiles, board data, flag counts, and win/loss status. 
+External sources: None
+Author: Lydia Peng
+Created: 9/15/26
+'''
 from board import Board
 from game_state import GameState
 
