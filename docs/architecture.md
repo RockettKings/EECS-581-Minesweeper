@@ -15,7 +15,7 @@ The system is organized into four parts. Keeping them separate lets the board, d
 
 ## Data Flow
 
-````
+```
 Player
   │  click / right-click
   ▼
@@ -24,7 +24,7 @@ Input Handler ──validated action──► Game Logic ◄──► Board Mana
                                         │ state changed
                                         ▼
                                   User Interface ──renders──► Player
-````
+```
 
 ## Key Data Structures
 
