@@ -30,5 +30,3 @@ Input Handler ──validated action──► Game Logic ◄──► Board Mana
 
 - **Grid** — a collection of cells whose dimensions are set by the chosen difficulty (Easy is 10×10; other difficulties use larger boards). Each cell knows whether it is a mine, whether it is flagged or uncovered, and how many neighboring mines it has. The selected difficulty sets both the grid size and the number of mines.
 - **Game state** — the mine count, flags remaining, and whether the game is still playing, won, or lost.
-````
-````
