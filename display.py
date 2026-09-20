@@ -104,7 +104,6 @@ def _get_cell(board, row, col):
 # helper function that gets the display information for one cell
 def _cell_info(state, cell, row, col):
     revealed = _get_value(cell, ["revealed", "is_revealed", "visible", "is_visible"])
-<<<<<<< HEAD
     flagged = _get_value(cell, ["isFlagged", "flagged", "is_flagged", "has_flag"])
     is_mine = _get_value(cell, ["isMine", "is_mine", "mine", "has_mine"])
     number = _get_value(cell, ["adjacent_mines", "adjacent", "neighbor_mines", "nearby_mines", "count"])
