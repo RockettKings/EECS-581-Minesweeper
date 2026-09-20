@@ -21,17 +21,20 @@ from game_manager import GameManager
 from game_state import GameStatus
 
 
+#starts a beginner game and reveals one cell so the board exists
 def live_manager():
     manager = GameManager(0)
     manager.reveal(0, 0)
     return manager
 
 
+#returns the tile at a row and column on the flat board list
 def tile_at(board, row, col):
     width = board.dimension["column"]
     return board.board[row * width + col]
 
 
+#checks that _get_cell reads a tile from the real Board object
 def test_get_cell_reads_contract_board_after_first_reveal():
     manager = live_manager()
     board = manager.get_board()
@@ -43,6 +46,7 @@ def test_get_cell_reads_contract_board_after_first_reveal():
     assert cell.revealed is True
 
 
+#checks that _cell_info reads a revealed numbered tile
 def test_cell_info_reads_revealed_number_from_tile():
     tile = Tile()
     tile.revealed = True
@@ -56,6 +60,7 @@ def test_cell_info_reads_revealed_number_from_tile():
     assert number == 3
 
 
+#checks that _cell_info reads the isFlagged field
 def test_cell_info_reads_flagged_tile():
     tile = Tile()
     tile.isFlagged = True
@@ -67,6 +72,7 @@ def test_cell_info_reads_flagged_tile():
     assert is_mine is False
 
 
+#checks that _cell_info reads the isMine field
 def test_cell_info_reads_revealed_mine():
     tile = Tile()
     tile.revealed = True
@@ -78,6 +84,7 @@ def test_cell_info_reads_revealed_mine():
     assert is_mine is True
 
 
+#checks that a new tile is treated as hidden and not a mine
 def test_cell_info_reads_hidden_blank_tile():
     tile = Tile()
 
@@ -89,6 +96,7 @@ def test_cell_info_reads_hidden_blank_tile():
     assert number in (None, 0)
 
 
+#checks that _count_flags matches a flag placed through GameManager
 def test_count_flags_matches_flagged_tiles_on_real_board():
     manager = live_manager()
     board = manager.get_board()
@@ -103,6 +111,7 @@ def test_count_flags_matches_flagged_tiles_on_real_board():
     assert manager.get_state().flags_placed == 1
 
 
+#checks that _get_total_mines reads mine_count from GameState
 def test_get_total_mines_reads_state_mine_count():
     manager = GameManager(0)
     state = manager.get_state()
@@ -110,6 +119,7 @@ def test_get_total_mines_reads_state_mine_count():
     assert display._get_total_mines(state) == state.mine_count == 10
 
 
+#checks the win and loss overlay strings
 def test_game_over_message_for_win_and_loss():
     won = GameManager(0).get_state()
     won.status = GameStatus.WON
