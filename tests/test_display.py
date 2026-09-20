@@ -22,6 +22,7 @@ import display
 from game_manager import GameManager
 
 
+#starts and shuts down pygame once for this module
 @pytest.fixture(scope="module", autouse=True)
 def pygame_setup():
     pygame.init()
@@ -29,10 +30,12 @@ def pygame_setup():
     pygame.quit()
 
 
+#checks that the difficulty labels match beginner, intermediate, and expert
 def test_difficulty_labels_match_ui_contract():
     assert display.DIFFICULTY_LABELS == ["Beginner", "Intermediate", "Expert"]
 
 
+#checks that the layout constants used by the UI are positive
 def test_layout_constants_are_positive():
     assert display.MENU_SIZE[0] > 0
     assert display.MENU_SIZE[1] > 0
@@ -41,6 +44,7 @@ def test_layout_constants_are_positive():
     assert display.MIN_WINDOW_WIDTH > 0
 
 
+#checks that each menu button sits inside the menu window
 @pytest.mark.parametrize("index", [0, 1, 2])
 def test_menu_button_rect_is_inside_menu(index):
     rect = display.menu_button_rect(index)
@@ -49,6 +53,7 @@ def test_menu_button_rect_is_inside_menu(index):
     assert menu.contains(rect)
 
 
+#checks that the three difficulty buttons do not overlap
 def test_menu_buttons_do_not_overlap():
     rects = [display.menu_button_rect(i) for i in range(len(display.DIFFICULTY_LABELS))]
 
@@ -57,6 +62,7 @@ def test_menu_buttons_do_not_overlap():
             assert not left.colliderect(right)
 
 
+#checks that the menu buttons are the same size and stacked vertically
 def test_menu_buttons_are_stacked_and_same_size():
     first = display.menu_button_rect(0)
     second = display.menu_button_rect(1)
@@ -67,6 +73,7 @@ def test_menu_buttons_are_stacked_and_same_size():
     assert first.y < second.y < third.y
 
 
+#checks that drawing the menu does not crash
 def test_draw_menu_does_not_raise():
     screen = pygame.display.set_mode(display.MENU_SIZE)
     font = pygame.font.SysFont(None, 24)
@@ -74,6 +81,7 @@ def test_draw_menu_does_not_raise():
     display.draw_menu(screen, font)
 
 
+#checks that drawing the game screen does not crash
 def test_draw_game_does_not_raise():
     manager = GameManager(0)
     window_w = max(manager.get_state().columns * display.CELL_SIZE, display.MIN_WINDOW_WIDTH)
@@ -85,6 +93,7 @@ def test_draw_game_does_not_raise():
     display.draw_game(screen, font, big_font, manager, 0.0)
 
 
+#creates a pygame screen and fonts sized for the current board
 def _game_screen(manager):
     state = manager.get_state()
     window_w = max(state.columns * display.CELL_SIZE, display.MIN_WINDOW_WIDTH)
@@ -95,12 +104,14 @@ def _game_screen(manager):
     return screen, font, big_font
 
 
+#returns the RGB color at the center of a cell
 def _cell_center_color(screen, row, col):
     x = col * display.CELL_SIZE + display.CELL_SIZE // 2
     y = display.TOP_BAR_HEIGHT + row * display.CELL_SIZE + display.CELL_SIZE // 2
     return screen.get_at((x, y))[:3]
 
 
+#collects the RGB colors used inside a cell
 def _cell_colors(screen, row, col):
     x0 = col * display.CELL_SIZE
     y0 = display.TOP_BAR_HEIGHT + row * display.CELL_SIZE
@@ -111,13 +122,14 @@ def _cell_colors(screen, row, col):
     return colors
 
 
+#forces known hidden, blank, number, flag, and mine cells on the last row
 def _forced_board(manager):
-    """Force known cell states on the last row so drawing can be checked."""
     if manager.get_board() is None:
         manager.reveal(0, 0)
     board = manager.get_board()
     width = board.dimension["column"]
 
+    #sets one cell on the last row to a known state
     def tile(col, **attrs):
         cell = board.board[9 * width + col]
         cell.revealed = False
@@ -137,6 +149,7 @@ def _forced_board(manager):
     }
 
 
+#checks that menu buttons are drawn with the button color
 def test_draw_menu_uses_button_color_inside_menu_buttons():
     screen = pygame.display.set_mode(display.MENU_SIZE)
     font = pygame.font.SysFont(None, 24)
@@ -148,6 +161,7 @@ def test_draw_menu_uses_button_color_inside_menu_buttons():
     assert screen.get_at(button.center)[:3] == display.BUTTON_COLOR
 
 
+#checks that hidden, blank, number, flag, and mine cells draw differently
 def test_draw_game_distinguishes_contract_cell_states():
     manager = GameManager(0)
     cells = _forced_board(manager)
@@ -169,6 +183,7 @@ def test_draw_game_distinguishes_contract_cell_states():
     assert cells["number"].adjacent == 3
 
 
+#checks that a loss overlay is drawn in the center of the screen
 def test_draw_game_shows_game_over_overlay_after_loss():
     manager = GameManager(0)
     manager.reveal(0, 0)
@@ -186,6 +201,7 @@ def test_draw_game_shows_game_over_overlay_after_loss():
     assert center == display.TEXT_COLOR
 
 
+#checks that the mine counter is total mines minus flags used
 def test_mine_counter_uses_remaining_mines():
     manager = GameManager(0)
     manager.reveal(0, 0)

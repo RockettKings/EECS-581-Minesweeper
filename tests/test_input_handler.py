@@ -24,12 +24,14 @@ import display
 from input_handler import MinesweeperGame
 
 
+#converts a board row and column into a click position in pixels
 def cell_click_pos(row, col):
     x = col * display.CELL_SIZE + display.CELL_SIZE // 2
     y = display.TOP_BAR_HEIGHT + row * display.CELL_SIZE + display.CELL_SIZE // 2
     return (x, y)
 
 
+#creates a MinesweeperGame for one test and closes the display after
 @pytest.fixture
 def game():
     pygame.init()
@@ -38,6 +40,7 @@ def game():
     pygame.display.quit()
 
 
+#checks that a new game starts on the difficulty menu
 def test_game_starts_on_menu(game):
     assert game.screen_mode == "menu"
     assert game.manager is None
@@ -46,6 +49,7 @@ def test_game_starts_on_menu(game):
     assert game.screen.get_size() == display.MENU_SIZE
 
 
+#checks that clicking a menu button starts that difficulty
 @pytest.mark.parametrize("index", [0, 1, 2])
 def test_menu_button_click_starts_selected_difficulty(game, index):
     button = display.menu_button_rect(index)
@@ -61,6 +65,7 @@ def test_menu_button_click_starts_selected_difficulty(game, index):
     assert game.start_ticks is None
 
 
+#checks that a click off the menu buttons does not start a game
 def test_menu_click_outside_buttons_does_not_start_game(game):
     game._handle_click((1, 1), 1)
 
@@ -68,6 +73,7 @@ def test_menu_click_outside_buttons_does_not_start_game(game):
     assert game.manager is None
 
 
+#checks that a left click on a cell calls reveal
 def test_left_click_maps_to_reveal(game):
     game._start_game(0)
     game.manager.reveal = MagicMock()
@@ -77,6 +83,7 @@ def test_left_click_maps_to_reveal(game):
     game.manager.reveal.assert_called_once_with(2, 3)
 
 
+#checks that a right click on a cell calls toggle_flag
 def test_right_click_maps_to_toggle_flag(game):
     game._start_game(0)
     game.manager.toggle_flag = MagicMock()
@@ -86,6 +93,7 @@ def test_right_click_maps_to_toggle_flag(game):
     game.manager.toggle_flag.assert_called_once_with(4, 1)
 
 
+#checks that clicks in the top bar do not change the board
 def test_top_bar_click_is_ignored(game):
     game._start_game(0)
     game.manager.reveal = MagicMock()
@@ -99,6 +107,7 @@ def test_top_bar_click_is_ignored(game):
     assert game.manager.get_state().first_move
 
 
+#checks that clicks past the last column are ignored
 def test_click_outside_board_is_ignored(game):
     game._start_game(0)
     game.manager.reveal = MagicMock()
@@ -112,6 +121,7 @@ def test_click_outside_board_is_ignored(game):
     game.manager.reveal.assert_not_called()
 
 
+#checks that the first reveal starts the timer
 def test_first_reveal_starts_timer(game):
     game._start_game(0)
 
@@ -125,6 +135,7 @@ def test_first_reveal_starts_timer(game):
     assert game._elapsed_seconds() >= 0.0
 
 
+#checks that flagging before the first reveal does not start the timer
 def test_first_move_flag_does_not_start_timer(game):
     game._start_game(0)
 
@@ -135,6 +146,7 @@ def test_first_move_flag_does_not_start_timer(game):
     assert game._elapsed_seconds() == 0.0
 
 
+#checks that a right click after the first reveal flags a hidden cell
 def test_flag_after_first_reveal_marks_a_hidden_cell(game):
     game._start_game(0)
     game._handle_game_click(cell_click_pos(0, 0), 1)
@@ -152,6 +164,7 @@ def test_flag_after_first_reveal_marks_a_hidden_cell(game):
     assert tile.isFlagged
 
 
+#checks that r restarts the same difficulty and resets the timer
 def test_r_restarts_same_difficulty_and_resets_timer(game):
     game._start_game(1)
     game._handle_game_click(cell_click_pos(0, 0), 1)
@@ -168,6 +181,7 @@ def test_r_restarts_same_difficulty_and_resets_timer(game):
     assert game.manager.get_board() is None
 
 
+#checks that escape returns to the difficulty menu
 def test_escape_returns_to_menu(game):
     game._start_game(0)
 
@@ -179,6 +193,7 @@ def test_escape_returns_to_menu(game):
     assert game.screen.get_size() == display.MENU_SIZE
 
 
+#checks that keyboard shortcuts do nothing on the menu
 def test_keyboard_ignored_on_menu(game):
     game._handle_keydown(pygame.K_r)
     game._handle_keydown(pygame.K_ESCAPE)
@@ -187,6 +202,7 @@ def test_keyboard_ignored_on_menu(game):
     assert game.manager is None
 
 
+#checks that the timer freezes after the player loses
 def test_timer_freezes_when_game_is_over(game):
     game._start_game(0)
     game._handle_game_click(cell_click_pos(0, 0), 1)
@@ -204,6 +220,7 @@ def test_timer_freezes_when_game_is_over(game):
     assert game._elapsed_seconds() == frozen
 
 
+#checks that later clicks do not change tiles after a loss
 def test_clicks_do_not_change_board_after_loss(game):
     game._start_game(0)
     game._handle_game_click(cell_click_pos(0, 0), 1)
@@ -231,6 +248,7 @@ def test_clicks_do_not_change_board_after_loss(game):
     assert tile.isFlagged == was_flagged
 
 
+#checks that the UI does not call the manager after the game ends
 def test_clicks_after_game_over_do_not_call_manager(game):
     game._start_game(0)
     game._handle_game_click(cell_click_pos(0, 0), 1)
@@ -250,6 +268,7 @@ def test_clicks_after_game_over_do_not_call_manager(game):
     game.manager.toggle_flag.assert_not_called()
 
 
+#checks that the game window is sized from the board and layout constants
 def test_started_window_uses_board_size(game):
     game._start_game(0)
     state = game.manager.get_state()

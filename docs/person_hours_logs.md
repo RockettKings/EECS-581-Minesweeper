@@ -6,3 +6,5 @@
 | 09/16 | Jaycob | Adjacency counts, edge cases     | Coding        | 1.0   |
 | 09/16 | Jaycob | Project board + ticket setup     | PM            | 1.5   |
 | 09/18 | Jaycob | Prologue headers + code comments | Documentation | 0.5   |
+| 09/19 | Jon    | Frontend pytest + interface contract | Testing   | 0.5   |
+| 09/20 | Jon    | Display QA, merge to main, board tests | QA     | 1.0   |
