@@ -88,6 +88,15 @@ def _get_matrix_value(state, names, row, col):
 
 # helper function for getting a cell from the board
 def _get_cell(board, row, col):
+    tiles = getattr(board, "board", None)
+    dimension = getattr(board, "dimension", None)
+    if isinstance(tiles, list) and isinstance(dimension, dict):
+        width = dimension.get("column")
+        if isinstance(width, int):
+            index = row * width + col
+            if 0 <= index < len(tiles):
+                return tiles[index]
+
     try:
         return board[row][col]
     except (TypeError, IndexError, KeyError):
@@ -102,8 +111,8 @@ def _get_cell(board, row, col):
 # helper function that gets the display information for one cell
 def _cell_info(state, cell, row, col):
     revealed = _get_value(cell, ["revealed", "is_revealed", "visible", "is_visible"])
-    flagged = _get_value(cell, ["flagged", "is_flagged", "has_flag"])
-    is_mine = _get_value(cell, ["is_mine", "mine", "has_mine"])
+    flagged = _get_value(cell, ["flagged", "isFlagged", "is_flagged", "has_flag"])
+    is_mine = _get_value(cell, ["isMine", "is_mine", "mine", "has_mine"])
     number = _get_value(cell, ["adjacent_mines", "adjacent", "neighbor_mines", "nearby_mines", "count"])
 
     # some implementations keep revealed/flagged information in GameState

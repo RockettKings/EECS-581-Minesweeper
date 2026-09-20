@@ -125,6 +125,16 @@ def test_first_reveal_starts_timer(game):
     assert game._elapsed_seconds() >= 0.0
 
 
+def test_first_move_flag_does_not_start_timer(game):
+    game._start_game(0)
+
+    game._handle_game_click(cell_click_pos(0, 0), 3)
+
+    assert game.manager.get_state().first_move
+    assert game.start_ticks is None
+    assert game._elapsed_seconds() == 0.0
+
+
 def test_flag_after_first_reveal_marks_a_hidden_cell(game):
     game._start_game(0)
     game._handle_game_click(cell_click_pos(0, 0), 1)
@@ -219,6 +229,25 @@ def test_clicks_do_not_change_board_after_loss(game):
 
     assert tile.revealed == was_revealed
     assert tile.isFlagged == was_flagged
+
+
+def test_clicks_after_game_over_do_not_call_manager(game):
+    game._start_game(0)
+    game._handle_game_click(cell_click_pos(0, 0), 1)
+
+    board = game.manager.get_board()
+    width = board.dimension["column"]
+    mine_index = next(i for i, tile in enumerate(board.board) if tile.isMine)
+    mine_row, mine_col = divmod(mine_index, width)
+    game._handle_game_click(cell_click_pos(mine_row, mine_col), 1)
+
+    game.manager.reveal = MagicMock()
+    game.manager.toggle_flag = MagicMock()
+    game._handle_game_click(cell_click_pos(1, 1), 1)
+    game._handle_game_click(cell_click_pos(1, 1), 3)
+
+    game.manager.reveal.assert_not_called()
+    game.manager.toggle_flag.assert_not_called()
 
 
 def test_started_window_uses_board_size(game):
