@@ -1,8 +1,12 @@
 '''
 Prologue comment
 File: display.py
-Description: 
-External sources:
+Description: Handles rendering for the Minesweeper game using pygame. Draws the difficulty selection menu, 
+game grid with hidden, revealed and flagged cells, top status bar with remaining mine count and elapsed time after click and 
+win loss screen after game has been played. 
+Inputs: Pygame screen and font objects, the game manager and elapsed time.
+Outputs: Rendered game menu and pygame display as well as clickable rectangles used by input_handler.py for menu hit detection
+External sources: Claude
 Author: Nick Heyer, Andrew Kruckemyer
 Created: 9/17/26
 '''
@@ -15,7 +19,7 @@ DIFFICULTY_LABELS = ["Beginner", "Intermediate", "Expert"]
 MENU_SIZE = (300, 200)
 TOP_BAR_HEIGHT = 40
 CELL_SIZE = 30
-MIN_WINDOW_WIDTH = 400
+MIN_WINDOW_WIDTH = 300
 
 # basic colors used by the menu and game board
 BACKGROUND_COLOR = (225, 225, 225)
@@ -88,30 +92,20 @@ def _get_matrix_value(state, names, row, col):
 
 # helper function for getting a cell from the board
 def _get_cell(board, row, col):
-    tiles = getattr(board, "board", None)
-    dimension = getattr(board, "dimension", None)
-    if isinstance(tiles, list) and isinstance(dimension, dict):
-        width = dimension.get("column")
-        if isinstance(width, int):
-            index = row * width + col
-            if 0 <= index < len(tiles):
-                return tiles[index]
-
+    if board is None: # board does not exist until the first reveal
+        return None
+    width = board.dimension["column"]
     try:
-        return board[row][col]
-    except (TypeError, IndexError, KeyError):
-        pass
-
-    if hasattr(board, "get_cell"):
-        return board.get_cell(row, col)
-
-    return None
+        return board.board[row * width + col]
+    except (TypeError, IndexError):
+        return None
 
 
 # helper function that gets the display information for one cell
 def _cell_info(state, cell, row, col):
     revealed = _get_value(cell, ["revealed", "is_revealed", "visible", "is_visible"])
-    flagged = _get_value(cell, ["flagged", "isFlagged", "is_flagged", "has_flag"])
+<<<<<<< HEAD
+    flagged = _get_value(cell, ["isFlagged", "flagged", "is_flagged", "has_flag"])
     is_mine = _get_value(cell, ["isMine", "is_mine", "mine", "has_mine"])
     number = _get_value(cell, ["adjacent_mines", "adjacent", "neighbor_mines", "nearby_mines", "count"])
 
