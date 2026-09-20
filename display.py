@@ -1,8 +1,12 @@
 '''
 Prologue comment
 File: display.py
-Description: 
-External sources:
+Description: Handles rendering for the Minesweeper game using pygame. Draws the difficulty selection menu, 
+game grid with hidden, revealed and flagged cells, top status bar with remaining mine count and elapsed time after click and 
+win loss screen after game has been played. 
+Inputs: Pygame screen and font objects, the game manager and elapsed time.
+Outputs: Rendered game menu and pygame display as well as clickable rectangles used by input_handler.py for menu hit detection
+External sources: Claude
 Author: Nick Heyer, Andrew Kruckemyer
 Created: 9/17/26
 '''
