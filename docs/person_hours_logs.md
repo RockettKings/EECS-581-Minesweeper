@@ -7,7 +7,7 @@
 | 09/16 | Jaycob | Project board + ticket setup     | PM            | 1.5   |
 | 09/18 | Jaycob | Prologue headers + code comments | Documentation | 0.5   |
 | 09/19 | Jon    | Frontend pytest + interface contract | Testing   | 0.5   |
-| 09/20 | Jon    | Display QA, merge to main, board tests | QA     | 1.0   |
+| 09/20 | Jon    | Display QA, merge to main, board tests | QA      | 1.0   |
 | 09/15 | Andrew | Meeting log                      | PM            | 0.5   |
 | 09/18 | Andrew | Input handling + timer           | Coding        | 2.5   |
 | 09/18 | Andrew | display.py skeleton              | Coding        | 0.5   |
@@ -21,3 +21,5 @@
 | 09/18 | Nick   | display.py helper functions      | Coding        | 3.0   |
 | 09/19 | Nick   | display.py prologue              | Documentation | 0.5   |
 | 09/19 | Nick   | display.py bug fixes             | Coding        | 2.0   |
+| 09/18 | Khang  | Game Board pytest                | Testing       | 0.5   |
+| 09/20 | Khang  | README + E2E test                | Doc+Testing   | 0.5   |
