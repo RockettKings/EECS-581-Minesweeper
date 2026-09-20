@@ -22,7 +22,9 @@ To produce an hour estimate for planning, we mapped story points to hours at a c
 
 | Area                    | Story points | Est. hours |
 |-------------------------|--------------|------------|
-| Backend logic           |              |            |
-| UI and user events      |              |            |
-| Integration / QA / docs |              |            |
-| **Total**               |              |            |
+| Backend logic           | 5            | 7.5        |
+| UI and user events      | 5            | 7.5        |
+| Integration / QA / docs | 2            | 3.0        |
+| **Total**               | **12**       | **18.0**   |
+
+Hours are story points × 1.5. Backend and UI were sized as medium (5). Integration / QA / docs was sized as small (2).
