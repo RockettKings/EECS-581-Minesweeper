@@ -17,3 +17,7 @@
 | 09/17 | Lydia  | Game state model                 | Coding        | 2.0   |
 | 09/18 | Lydia  | Flood Fill                       | Coding        | 1.0   |
 | 09/18 | Lydia  | Win/loss detection               | Coding        | 1.0   |
+| 09/18 | Nick   | Input Handling fixes             | Coding        | 1.0   |
+| 09/18 | Nick   | display.py helper functions      | Coding        | 3.0   |
+| 09/19 | Nick   | display.py prologue              | Documentation | 0.5   |
+| 09/19 | Nick   | display.py bug fixes             | Coding        | 2.0   |
