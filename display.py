@@ -1,0 +1,294 @@
+'''
+Prologue comment
+File: display.py
+Description: Handles rendering for the Minesweeper game using pygame. Draws the difficulty selection menu, 
+game grid with hidden, revealed and flagged cells, top status bar with remaining mine count and elapsed time after click and 
+win loss screen after game has been played. 
+Inputs: Pygame screen and font objects, the game manager and elapsed time.
+Outputs: Rendered game menu and pygame display as well as clickable rectangles used by input_handler.py for menu hit detection
+External sources: Claude
+Author: Nick Heyer, Andrew Kruckemyer
+Created: 9/17/26
+'''
+import pygame
+from game_state import GameStatus
+
+# required constants (referenced in input_handler.py)
+# feel free to change these values
+DIFFICULTY_LABELS = ["Beginner", "Intermediate", "Expert"]
+MENU_SIZE = (300, 200)
+TOP_BAR_HEIGHT = 40
+CELL_SIZE = 30
+MIN_WINDOW_WIDTH = 300
+
+# basic colors used by the menu and game board
+BACKGROUND_COLOR = (225, 225, 225)
+BUTTON_COLOR = (190, 190, 190)
+BUTTON_HOVER_COLOR = (210, 210, 210)
+BORDER_COLOR = (90, 90, 90)
+HIDDEN_CELL_COLOR = (180, 180, 180)
+REVEALED_CELL_COLOR = (235, 235, 235)
+TOP_BAR_COLOR = (205, 205, 205)
+TEXT_COLOR = (20, 20, 20)
+MINE_COLOR = (190, 40, 40)
+FLAG_COLOR = (190, 40, 40)
+
+NUMBER_COLORS = {
+    1: (0, 0, 200),
+    2: (0, 130, 0),
+    3: (200, 0, 0),
+    4: (0, 0, 120),
+    5: (120, 0, 0),
+    6: (0, 120, 120),
+    7: (0, 0, 0),
+    8: (90, 90, 90),
+}
+ 
+# required funcions (referenced in input_handler.py)
+# called in input_handler.py to get the clickable rect for the difficulty buttons
+def menu_button_rect(index):
+    """Returns the clickable rect for the difficulty button at `index`.
+    Used by input_handler.py for click detection AND should be used
+    here in draw_menu() so buttons are drawn exactly where clicks are
+    detected. Feel free to change the layout -- just keep both uses in
+    sync."""
+    width, height = 200, 40
+    x = (MENU_SIZE[0] - width) // 2
+    y = 40 + index * (height + 10)
+    return pygame.Rect(x, y, width, height)
+
+# helper function for centering text inside a rectangle
+def _draw_centered_text(screen, font, text, color, rect):
+    text_surface = font.render(str(text), True, color)
+    text_rect = text_surface.get_rect(center=rect.center)
+    screen.blit(text_surface, text_rect)
+
+
+# helper function for reading a value from either an object or dictionary
+def _get_value(item, names, default=None):
+    if item is None:
+        return default
+
+    for name in names:
+        if isinstance(item, dict) and name in item:
+            return item[name]
+        if hasattr(item, name):
+            return getattr(item, name)
+
+    return default
+
+
+# helper function for reading a row/column value from a state matrix
+def _get_matrix_value(state, names, row, col):
+    matrix = _get_value(state, names)
+    if matrix is None:
+        return None
+
+    try:
+        return matrix[row][col]
+    except (TypeError, IndexError, KeyError):
+        return None
+
+
+# helper function for getting a cell from the board
+def _get_cell(board, row, col):
+    if board is None: # board does not exist until the first reveal
+        return None
+    width = board.dimension["column"]
+    try:
+        return board.board[row * width + col]
+    except (TypeError, IndexError):
+        return None
+
+
+# helper function that gets the display information for one cell
+def _cell_info(state, cell, row, col):
+    revealed = _get_value(cell, ["revealed", "is_revealed", "visible", "is_visible"])
+    flagged = _get_value(cell, ["isFlagged", "flagged", "is_flagged", "has_flag"])
+    is_mine = _get_value(cell, ["isMine", "is_mine", "mine", "has_mine"])
+    number = _get_value(cell, ["adjacent_mines", "adjacent", "neighbor_mines", "nearby_mines", "count"])
+
+    # some implementations keep revealed/flagged information in GameState
+    if revealed is None:
+        revealed = _get_matrix_value(state, ["revealed", "revealed_cells", "visible_cells"], row, col)
+    if flagged is None:
+        flagged = _get_matrix_value(state, ["flags", "flagged", "flagged_cells"], row, col)
+
+    # some cell implementations store the mine/number in a value field
+    value = _get_value(cell, ["value"])
+    if is_mine is None and isinstance(value, int):
+        is_mine = value == -1
+    if number is None and isinstance(value, int) and 0 <= value <= 8:
+        number = value
+
+    # support simple string boards as well as Cell objects
+    if isinstance(cell, str):
+        token = cell.strip().upper()
+        if flagged is None:
+            flagged = token in {"F", "FLAG", "⚑", "🚩"}
+        if revealed is None:
+            revealed = token not in {"", "#", "?", "HIDDEN", "COVERED", "UNREVEALED", "F", "FLAG", "⚑", "🚩"}
+        if is_mine is None:
+            is_mine = token in {"*", "M", "MINE", "X"}
+        if number is None and token.isdigit():
+            number = int(token)
+
+    # support a simple integer board if that is what GameManager returns
+    if isinstance(cell, int) and not isinstance(cell, bool):
+        if is_mine is None:
+            is_mine = cell == -1
+        if number is None and 0 <= cell <= 8:
+            number = cell
+        if revealed is None:
+            revealed = True
+
+    if revealed is None:
+        revealed = False
+    if flagged is None:
+        flagged = False
+    if is_mine is None:
+        is_mine = False
+
+    return bool(revealed), bool(flagged), bool(is_mine), number
+
+
+# helper function for counting the number of flags on the board
+def _count_flags(state, board):
+    count = 0
+    for row in range(state.rows):
+        for col in range(state.columns):
+            cell = _get_cell(board, row, col)
+            _, flagged, _, _ = _cell_info(state, cell, row, col)
+            if flagged:
+                count += 1
+    return count
+
+
+# helper function for getting the total number of mines from GameState
+def _get_total_mines(state):
+    total = _get_value(state, ["mine_count", "num_mines", "total_mines", "mines"])
+
+    if isinstance(total, int):
+        return total
+    if isinstance(total, (list, tuple, set)):
+        return len(total)
+
+    return None
+
+
+# helper function for deciding which game-over message to show
+def _game_over_message(state):
+    status = _get_value(state, ["status", "game_status"])
+
+    # use the imported GameStatus enum when its members are available
+    if hasattr(GameStatus, "WON") and status == GameStatus.WON:
+        return "You Win!"
+    if hasattr(GameStatus, "WIN") and status == GameStatus.WIN:
+        return "You Win!"
+    if hasattr(GameStatus, "LOST") and status == GameStatus.LOST:
+        return "Game Over"
+    if hasattr(GameStatus, "LOSS") and status == GameStatus.LOSS:
+        return "Game Over"
+
+    status_name = getattr(status, "name", str(status)).upper()
+    if "WIN" in status_name or "WON" in status_name:
+        return "You Win!"
+
+    if bool(_get_value(state, ["won", "is_won", "win"], False)):
+        return "You Win!"
+
+    return "Game Over"
+
+# called in input_handler.py to draw the menu screen with difficulty buttons
+def draw_menu(screen, font):
+    screen.fill(BACKGROUND_COLOR)
+
+    title = font.render("Minesweeper", True, TEXT_COLOR)
+    title_rect = title.get_rect(center=(MENU_SIZE[0] // 2, 20))
+    screen.blit(title, title_rect)
+
+    mouse_pos = pygame.mouse.get_pos()
+
+    for i in range(len(DIFFICULTY_LABELS)):
+        rect = menu_button_rect(i)
+
+        if rect.collidepoint(mouse_pos):
+            color = BUTTON_HOVER_COLOR
+        else:
+            color = BUTTON_COLOR
+
+        pygame.draw.rect(screen, color, rect)
+        pygame.draw.rect(screen, BORDER_COLOR, rect, 2)
+        _draw_centered_text(screen, font, DIFFICULTY_LABELS[i], TEXT_COLOR, rect)
+
+# called in input_handler.py to draw the game screen with the grid, status bar, mine counter, timer, and win/loss message
+def draw_game(screen, font, big_font, manager, elapsed_seconds):
+    # gives you the current game state and board to use for drawing
+    state = manager.get_state()
+    board = manager.get_board()
+
+    screen.fill(BACKGROUND_COLOR)
+
+    # draw the top status bar
+    top_bar = pygame.Rect(0, 0, screen.get_width(), TOP_BAR_HEIGHT)
+    pygame.draw.rect(screen, TOP_BAR_COLOR, top_bar)
+    pygame.draw.line(screen, BORDER_COLOR,
+                     (0, TOP_BAR_HEIGHT - 1),
+                     (screen.get_width(), TOP_BAR_HEIGHT - 1), 1)
+
+    flags_used = _count_flags(state, board)
+    total_mines = _get_total_mines(state)
+
+    if total_mines is None:
+        mine_text = "Flags: " + str(flags_used)
+    else:
+        mine_text = "Mines: " + str(max(total_mines - flags_used, 0))
+
+    mine_surface = font.render(mine_text, True, TEXT_COLOR)
+    screen.blit(mine_surface, (8, 10))
+
+    timer_text = "Time: " + str(int(elapsed_seconds))
+    timer_surface = font.render(timer_text, True, TEXT_COLOR)
+    timer_rect = timer_surface.get_rect()
+    timer_rect.top = 10
+    timer_rect.right = screen.get_width() - 8
+    screen.blit(timer_surface, timer_rect)
+
+    # draw every cell in the board
+    for row in range(state.rows):
+        for col in range(state.columns):
+            x = col * CELL_SIZE
+            y = TOP_BAR_HEIGHT + row * CELL_SIZE
+            rect = pygame.Rect(x, y, CELL_SIZE, CELL_SIZE)
+
+            cell = _get_cell(board, row, col)
+            revealed, flagged, is_mine, number = _cell_info(state, cell, row, col)
+
+            if revealed:
+                pygame.draw.rect(screen, REVEALED_CELL_COLOR, rect)
+
+                if is_mine:
+                    _draw_centered_text(screen, font, "*", MINE_COLOR, rect)
+                elif isinstance(number, int) and number > 0:
+                    color = NUMBER_COLORS.get(number, TEXT_COLOR)
+                    _draw_centered_text(screen, font, number, color, rect)
+            else:
+                pygame.draw.rect(screen, HIDDEN_CELL_COLOR, rect)
+
+                if flagged:
+                    _draw_centered_text(screen, font, "F", FLAG_COLOR, rect)
+
+            pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
+
+    # show the result after the game ends
+    if not state.is_active:
+        message = _game_over_message(state)
+        message_surface = big_font.render(message, True, TEXT_COLOR)
+        message_rect = message_surface.get_rect(
+            center=(screen.get_width() // 2, screen.get_height() // 2)
+        )
+
+        background_rect = message_rect.inflate(30, 20)
+        pygame.draw.rect(screen, TOP_BAR_COLOR, background_rect)
+        pygame.draw.rect(screen, BORDER_COLOR, background_rect, 2)
+        screen.blit(message_surface, message_rect)

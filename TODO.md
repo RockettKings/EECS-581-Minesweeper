@@ -50,7 +50,12 @@ The three teams build against a shared **interface contract** (the methods the U
 ## Team 3 — Integration, QA, Testing
 
 ### Necessities
-- [ ] **Define and enforce the interface contract** — the exact set of methods the UI is allowed to call on the game object. This is the single most important thing this team owns; it's what lets Teams 1 and 2 work in parallel. *(Still to pin down — list the actual method signatures here once agreed.)*
+- [x] **Define and enforce the interface contract** — the exact set of methods the UI is allowed to call on the game object. Full text: `docs/interface_contract.md`. Enforced by `tests/test_interface_contract.py`. Signatures:
+  - `GameManager(difficulty: int)`
+  - `reveal(row: int, column: int) -> Tile | None`
+  - `toggle_flag(row: int, column: int) -> None`
+  - `get_state() -> GameState`
+  - `get_board() -> Board | None`
 - [ ] **Wire backend and UI together** — assemble a running game and keep it running as both sides change.
 - [ ] **Unit tests** for the logic-heavy backend pieces: adjacency counts, flood fill, win/loss detection, first-click safety.
 - [ ] **End-to-end sanity check** — play a full game (start → reveal → flag → win, and → loss) and confirm it behaves.
