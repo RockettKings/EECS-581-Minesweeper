@@ -12,6 +12,7 @@
 | 09/18 | Andrew | Input handling + timer           | Coding        | 2.5   |
 | 09/18 | Andrew | display.py skeleton              | Coding        | 0.5   |
 | 09/19 | Andrew | Prologue headers + code comments | Documentation | 0.5   |
+| 09/20 | Andrew | Minor bug fixes                  | Coding        | 0.5   |
 | 09/17 | Lydia  | Reveal logic                     | Coding        | 2.0   |
 | 09/17 | Lydia  | Flag toggling                    | Coding        | 1.0   |
 | 09/17 | Lydia  | Game state model                 | Coding        | 2.0   |
