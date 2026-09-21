@@ -17,7 +17,7 @@ from game_state import GameStatus
 # feel free to change these values
 DIFFICULTY_LABELS = ["Beginner", "Intermediate", "Expert"]
 MENU_SIZE = (300, 200)
-TOP_BAR_HEIGHT = 40
+TOP_BAR_HEIGHT = 72
 CELL_SIZE = 30
 MIN_WINDOW_WIDTH = 300
 
@@ -242,7 +242,7 @@ def draw_game(screen, font, big_font, manager, elapsed_seconds):
     if total_mines is None:
         mine_text = "Flags: " + str(flags_used)
     else:
-        mine_text = "Mines: " + str(max(total_mines - flags_used, 0))
+        mine_text = "Flags: " + str(total_mines - flags_used)
 
     mine_surface = font.render(mine_text, True, TEXT_COLOR)
     screen.blit(mine_surface, (8, 10))
@@ -253,6 +253,12 @@ def draw_game(screen, font, big_font, manager, elapsed_seconds):
     timer_rect.top = 10
     timer_rect.right = screen.get_width() - 8
     screen.blit(timer_surface, timer_rect)
+    guide_text = "R: restart   Esc: menu"
+    guide_surface = font.render(guide_text, True, TEXT_COLOR)
+    guide_rect = guide_surface.get_rect()
+    guide_rect.top = 40
+    guide_rect.centerx = screen.get_width() // 2
+    screen.blit(guide_surface, guide_rect)
 
     # draw every cell in the board
     for row in range(state.rows):

@@ -23,8 +23,8 @@ class MinesweeperGame:
     def __init__(self):
         pygame.init()
         pygame.display.set_caption("Minesweeper")
-        self.font = pygame.font.SysFont(None, 24)
-        self.big_font = pygame.font.SysFont(None, 40, bold=True)
+        self.font = pygame.font.SysFont("arial", 24)
+        self.big_font = pygame.font.SysFont("arial", 40, bold=True)
         self.clock = pygame.time.Clock()
 
         # game state
